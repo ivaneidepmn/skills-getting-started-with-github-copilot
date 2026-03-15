@@ -67,3 +67,4 @@ def signup_for_activity(activity_name: str, email: str):
     return {"message": f"Signed up {email} for {activity_name}"}
 
 # suggest a new API endpoint for activities
+# Copilot practice step

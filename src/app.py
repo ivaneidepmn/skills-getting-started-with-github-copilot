@@ -11,18 +11,13 @@ from fastapi.responses import RedirectResponse
 import os
 from pathlib import Path
 
-app = FastAPI(
-    title="Mergington High School API",
-    description="API for viewing and signing up for extracurricular activities"
-)
+app = FastAPI(title="Mergington High School API",
+              description="API for viewing and signing up for extracurricular activities")
 
 # Mount the static files directory
 current_dir = Path(__file__).parent
-app.mount(
-    "/static",
-    StaticFiles(directory=os.path.join(current_dir, "static")),
-    name="static"
-)
+app.mount("/static", StaticFiles(directory=os.path.join(Path(__file__).parent,
+          "static")), name="static")
 
 # In-memory activity database
 activities = {
@@ -60,7 +55,6 @@ def get_activities():
 @app.post("/activities/{activity_name}/signup")
 def signup_for_activity(activity_name: str, email: str):
     """Sign up a student for an activity"""
-
     # Validate activity exists
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
@@ -68,16 +62,12 @@ def signup_for_activity(activity_name: str, email: str):
     # Get the specific activity
     activity = activities[activity_name]
 
-    # ✅ FIX BUG — prevent duplicate signup
+    # ✅ CORREÇÃO DO BUG (verificar email duplicado)
     if email in activity["participants"]:
-        raise HTTPException(
-            status_code=400,
-            detail="Student already signed up"
-        )
+        raise HTTPException(status_code=400, detail="Student already signed up")
 
     # Add student
     activity["participants"].append(email)
-
     return {"message": f"Signed up {email} for {activity_name}"}
 
 # suggest a new API endpoint for activities
